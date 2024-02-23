@@ -1,12 +1,13 @@
 import 'package:mini_notes/models/note_database.dart';
+import 'package:mini_notes/models/user_database.dart';
 import 'package:mini_notes/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'pages/notes_page.dart';
 
 void main() async{
-  //INITIALIZE NOTE ISAR DB
-  WidgetsFlutterBinding.ensureInitialized();
+  //INITIALIZE NOTE NOTE DB & USER DB
+  WidgetsFlutterBinding.ensureInitialized(); 
   await NoteDatabase.initialize();
 
   runApp(
@@ -16,7 +17,8 @@ void main() async{
         ChangeNotifierProvider(create: (context) => NoteDatabase()),
 
         // Theme Provider
-        ChangeNotifierProvider(create: (context) => ThemeProvider())
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      
       ],
       child: const MyApp(),
     ),

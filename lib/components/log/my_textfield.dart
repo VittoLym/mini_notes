@@ -4,11 +4,15 @@ class MyTextfield extends StatelessWidget {
   final controller;
   final String hintText;
   final bool obscureText;
-  const MyTextfield({
+  bool validate;
+  ValueChanged<bool> onValidationChanged;
+  MyTextfield({
     super.key,
     required this.controller,
     required this.hintText,
-    required this.obscureText
+    required this.obscureText,
+    required this.validate,
+    required this.onValidationChanged
     });
 
   @override
@@ -16,22 +20,28 @@ class MyTextfield extends StatelessWidget {
     return  Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 child: TextField(
+                  onChanged: (text) {
+                  Future.delayed(const Duration(milliseconds: 100),(){
+                    validate = validate;
+                    onValidationChanged(true);
+                  });
+                  
+                  },
                   controller: controller,
                   obscureText: obscureText,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary
+                        color: validate ? Theme.of(context).colorScheme.secondary : Colors.red
                       )
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.primary)
+                        color:validate ? Theme.of(context).colorScheme.inversePrimary : Colors.red)
                       ),
                     fillColor: Theme.of(context).colorScheme.primary,
                     filled: true,
-                    hintText: hintText,
-
+                    hintText: hintText, hintStyle: TextStyle(color: validate ? Theme.of(context).colorScheme.secondary : Colors.red),
                   ),
                 ),
               );

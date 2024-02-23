@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:mini_notes/models/note.dart';
 import 'package:mini_notes/models/user.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -9,7 +10,8 @@ class UserDB extends ChangeNotifier{
   //INITIALIZE
   static Future<void> initialize() async{
     final dir = await getApplicationCacheDirectory();
-    isar = await Isar.open([UserSchema], directory: dir.path);
+    print(dir.path);
+    isar = await Isar.open([UserSchema,NoteSchema], directory: dir.path);
   }
 
   // list user

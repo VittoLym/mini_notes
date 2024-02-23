@@ -1,6 +1,7 @@
 import 'package:mini_notes/models/note.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:mini_notes/models/user.dart';
 import 'package:path_provider/path_provider.dart';
 
 class NoteDatabase extends ChangeNotifier {
@@ -9,10 +10,14 @@ class NoteDatabase extends ChangeNotifier {
   // INICIALIZE
   static Future<void> initialize() async {
     final dir = await getApplicationDocumentsDirectory();
-    isar = await Isar.open([NoteSchema], directory: dir.path);
+    isar = await Isar.open([NoteSchema,UserSchema], directory: dir.path);
   }
   //List notes
   final List<Note> currentNotes = [];
+
+    // list user
+  final List<User> currentUser = [];
+
 
   //CREATE (create and save notes to db)
   Future<void> addNote(String textFromUser) async {
@@ -51,4 +56,48 @@ class NoteDatabase extends ChangeNotifier {
     await fetchNotes();
   }
 
+  // CREATE user & save to db
+  Future<void> addUser(String name, String email, String password) async{
+    
+    final newuser = User()
+      ..name = name
+      ..email = email
+      ..password = password;
+
+    await isar.writeTxn(() => isar.users.put(newuser));
+
+      fetchUser();
+  }
+
+  //READ users
+  Future<void> fetchUser() async{
+    List<User> fetchedUsers = await isar.users.where().findAll();
+    currentUser.clear();
+    currentUser.addAll(fetchedUsers);
+    notifyListeners();
+  }
+
+  //UPDATE user
+  Future<void> updateUser(int id, {String? name, String? email, String? password}) async{
+    final existingUser = await isar.users.get(id);
+    if(existingUser != null){
+      if(name != null){
+        existingUser.name = name;
+      }
+      if(email != null){
+        existingUser.email = email;
+      }
+      if(password != null){
+        existingUser.password = password;
+      }
+      await isar.writeTxn(() => isar.users.put(existingUser));
+      await fetchUser();
+    }
+  }
+
+  //DELETE user
+  Future<void> deleteUser(int id) async{
+    await isar.writeTxn(() => isar.users.delete(id));
+    fetchUser();
+  }
 }

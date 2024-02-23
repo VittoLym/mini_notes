@@ -4,7 +4,10 @@ class MyTextBox extends StatelessWidget {
   final String text;
   final String sectionName;
   final void Function()? onPressed;
-  const MyTextBox({
+
+  bool uwu = true;
+
+  MyTextBox({
     super.key,
     required  this.sectionName,
     required  this.text,
@@ -36,7 +39,7 @@ class MyTextBox extends StatelessWidget {
               //section name
               Text(
                 sectionName,
-                style: TextStyle(color:Theme.of(context).colorScheme.secondary),
+                style: TextStyle(color: Theme.of(context).colorScheme.secondary  ),
               ),
               //edit butto
               IconButton(onPressed: onPressed, icon:const Icon(Icons.settings))

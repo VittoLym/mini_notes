@@ -129,7 +129,6 @@ class _NotesPageState extends State<NotesPage> {
 
   //current notes
   List<Note> currentNotes = noteDatabase.currentNotes;
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

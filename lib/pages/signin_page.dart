@@ -4,27 +4,30 @@ import 'package:mini_notes/components/log/my_textfield.dart';
 import 'package:mini_notes/components/log/square_tile.dart';
 import 'package:mini_notes/models/note_database.dart';
 import 'package:mini_notes/models/user.dart';
+import 'package:mini_notes/pages/login_page.dart';
 import 'package:mini_notes/pages/perfil_page.dart';
-import 'package:mini_notes/pages/signin_page.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
-class MyLoginPage extends StatefulWidget {
-  MyLoginPage({super.key});
+class MySigninPage extends StatefulWidget {
+  MySigninPage({super.key});
 
   @override
-  State<MyLoginPage> createState() => _MyLoginPageState();
+  State<MySigninPage> createState() => _MySigninPageState();
 }
 
-
-class _MyLoginPageState extends State<MyLoginPage> {
-  //text edit controller
-  final unController = TextEditingController();
-  final passwordController = TextEditingController();
-
+class _MySigninPageState extends State<MySigninPage> {
   bool isEmail = true;
+
+  bool isUser = true;
+
   bool isPassword = true;
 
+  final unController = TextEditingController();
+
+  final passwordController = TextEditingController();
+
+  final emailController = TextEditingController();
 
   @override
   void initState(){
@@ -33,39 +36,30 @@ class _MyLoginPageState extends State<MyLoginPage> {
     readUser();
   }
 
-  void signUserIn() {
+  void signUp() {
     readUser();
-      List<User> users =  context.read<NoteDatabase>().currentUser;
-      if(users.isEmpty){
-        Navigator.pop(context);
-          Navigator.push(context,
-            MaterialPageRoute(
-              builder: (context) => const PerfilPage()                
-            )
-        );
-      }
-      
-      if(users.isNotEmpty){
-        List<User> isUsere = users.where((u)=> u.email == unController.text).toList();
-        List<User> isUserpw = users.where((i)=> i.password == passwordController.text).toList();
-        if(isUsere.isEmpty) {
+    List<User> users =  context.read<NoteDatabase>().currentUser;
+    if(users.isEmpty && emailController.text != '' && unController.text != '' && passwordController.text != '') {
+        List<String> ctl = unController.text.split(' ');
+        context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text);
+    }
+    
+    if(users.isNotEmpty){
+      List<User> userCreated = users.where((u) => u.email == emailController.text).toList();
+      if(userCreated.isNotEmpty) {
           isEmail = false;
-          Vibration.vibrate(duration:500, amplitude: 128);
-        }
-
-        if(isUserpw.isEmpty){
-          isPassword = false;
-          Vibration.vibrate(duration:500, amplitude: 128);
-        }
-        if(isUsere.isNotEmpty && isUserpw.isNotEmpty){
-          Navigator.pop(context);
-          Navigator.push(context,
+      };
+      if(userCreated.isEmpty && emailController.text != '' && unController.text != '' && passwordController.text != ''){
+        List<String> ctl = unController.text.split(' ');
+        context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text);
+        Navigator.pop(context);
+        Navigator.push(context,
             MaterialPageRoute(
               builder: (context) => const PerfilPage()                
             )
           );
-        }
       }
+    }
   }
 
   void readUser(){
@@ -73,12 +67,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
   }
   @override
   Widget build(BuildContext context) {
-
-    final userdatabase = context.watch<NoteDatabase>();
-
-    List<User> currentUser = userdatabase.currentUser;
-
-    return  Scaffold(
+    return Scaffold(
       body:  SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -86,13 +75,13 @@ class _MyLoginPageState extends State<MyLoginPage> {
               children: [
                 const SizedBox(height: 50,),
                 Icon(
-                  Icons.lock, 
+                  Icons.lock_open, 
                   size: 100, 
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
                 const SizedBox(height: 50,),
                 Text(
-                  'Welcome back you\'ve been missed!',
+                  'Welcome new user!',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.inversePrimary,
                     fontSize: 16
@@ -101,46 +90,42 @@ class _MyLoginPageState extends State<MyLoginPage> {
                 const SizedBox(height: 25,),
                 MyTextfield(
                   controller: unController,
-                  hintText: 'Email',
+                  hintText: 'Username',
                   obscureText: false,
-                  validate: isEmail,
-                  onValidationChanged: (newValue){
+                  validate: isUser,
+                    onValidationChanged: (newValue){
                     setState((){
-                        isEmail= newValue;
+                        isUser= newValue;
                     });
                   }
                 ),
                 const SizedBox(height: 10,),
                 MyTextfield(
-                  controller: passwordController,
-                  hintText: 'Password' ,
-                  obscureText: true,
-                  validate: isPassword,
-                  onValidationChanged: (newValue){
+                  controller: emailController,
+                  hintText: 'Email',
+                  obscureText: false,
+                  validate: isEmail,
+                    onValidationChanged: (newValue){
                     setState((){
-                      isPassword = newValue;
+                        isEmail= newValue;
                     });
                   }
-                ),
-                const SizedBox(height: 10,),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text('Forgot Password?', 
-                      style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary)
-                      ,),
-                    ],
                   ),
-                ),
-                
+                const SizedBox(height: 10,),
+                MyTextfield(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
+                  validate: isPassword,
+                    onValidationChanged: (newValue){
+                    setState((){
+                        isPassword= newValue;
+                    });
+                  }
+                  ),
                 const SizedBox(height: 25,),
-          
-                MyButton(onTap: signUserIn, text: 'Sign in',),
-          
+                MyButton(onTap: signUp, text: 'Sign Up'),
                 const SizedBox(height: 50,),
-          
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Row(
@@ -168,34 +153,32 @@ class _MyLoginPageState extends State<MyLoginPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 50,),
+                const SizedBox(height: 40,),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MySquareTile(imgPath: 'lib/image/google.png'),
-          
                     SizedBox(width: 25,),
-                    
                     MySquareTile(imgPath: 'lib/image/apple.png')
-                  ],
-                ),
-                const SizedBox(height: 50,),
+                  ]),
+                  
+                const SizedBox(height: 40,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Not a member?'),
+                    const Text('Are you already register?'),
                     const SizedBox(width: 4,),
                     GestureDetector(
                       onTap: (){
                         Navigator.pop(context);
                         Navigator.push(context,
                           MaterialPageRoute(
-                            builder: (context) =>  MySigninPage()                
+                            builder: (context) =>  MyLoginPage()                
                           )
                         );
                       },
                       child: const Text(
-                        'Register Now', 
+                        'Login Now', 
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold
@@ -204,11 +187,10 @@ class _MyLoginPageState extends State<MyLoginPage> {
                     )
                   ],
                 )
-              ],
-            ),
-          ),
-        ),
-      )
-    );
+                ])
+              )
+            )
+          )
+        );
   }
 }
