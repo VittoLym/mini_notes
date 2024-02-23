@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ThemeProvider with ChangeNotifier {
   // initially
-  ThemeData _themeData = lightMode;
+  ThemeData _themeData = darkMode;
 
   // getter method to access the themme from other parts of the code
   ThemeData get themeData => _themeData;

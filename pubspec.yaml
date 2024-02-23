@@ -28,8 +28,10 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: "launcher_icon"
-  image_path: "assets/icon/te.png"
+  image_path: "assets/image/mate.png"
 flutter:
   uses-material-design: true
-assets:
-  -assets/
+
+  assets:
+  - assets/image/
+  - lib/image/
