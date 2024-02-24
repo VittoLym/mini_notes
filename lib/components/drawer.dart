@@ -47,7 +47,7 @@ class _MyDrawerState extends State<MyDrawer> {
               Navigator.pop(context),
               Navigator.push(context,
                 MaterialPageRoute(
-                  builder: (context) => conditions ? const PerfilPage() :  MyLoginPage()                
+                  builder: (context) => conditions ? const PerfilPage(data: 'Drawer', email: 'DrawerEmail',) : const MyLoginPage()                
                 )
               )
             }
@@ -71,7 +71,7 @@ class _MyDrawerState extends State<MyDrawer> {
         DrawerTile(
           title: 'L O G O U T',
           leading: const Icon(Icons.logout),
-          onTap: ()=>print('logout in proccess')
+          onTap: ()=>{}
           )
       ],
       ),

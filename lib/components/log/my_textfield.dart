@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class MyTextfield extends StatelessWidget {
-  final controller;
+  final  TextEditingController controller;
   final String hintText;
   final bool obscureText;
   bool validate;
-  ValueChanged<bool> onValidationChanged;
+  final ValueChanged<bool> onValidationChanged;
+
+  
   MyTextfield({
     super.key,
     required this.controller,
@@ -22,7 +24,6 @@ class MyTextfield extends StatelessWidget {
                 child: TextField(
                   onChanged: (text) {
                   Future.delayed(const Duration(milliseconds: 100),(){
-                    validate = validate;
                     onValidationChanged(true);
                   });
                   

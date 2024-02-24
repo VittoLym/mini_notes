@@ -10,7 +10,6 @@ class UserDB extends ChangeNotifier{
   //INITIALIZE
   static Future<void> initialize() async{
     final dir = await getApplicationCacheDirectory();
-    print(dir.path);
     isar = await Isar.open([UserSchema,NoteSchema], directory: dir.path);
   }
 
@@ -35,7 +34,6 @@ class UserDB extends ChangeNotifier{
     List<User> fetchedUsers = await isar.users.where().findAll();
     currentUser.clear();
     currentUser.addAll(fetchedUsers);
-    print(currentUser);
     notifyListeners();
   }
 

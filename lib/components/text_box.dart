@@ -5,9 +5,7 @@ class MyTextBox extends StatelessWidget {
   final String sectionName;
   final void Function()? onPressed;
 
-  bool uwu = true;
-
-  MyTextBox({
+  const MyTextBox({
     super.key,
     required  this.sectionName,
     required  this.text,

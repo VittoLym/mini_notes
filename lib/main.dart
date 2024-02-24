@@ -1,5 +1,4 @@
 import 'package:mini_notes/models/note_database.dart';
-import 'package:mini_notes/models/user_database.dart';
 import 'package:mini_notes/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

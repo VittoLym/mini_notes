@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
 class MyLoginPage extends StatefulWidget {
-  MyLoginPage({super.key});
+  const MyLoginPage({super.key});
 
   @override
   State<MyLoginPage> createState() => _MyLoginPageState();
@@ -24,6 +24,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   bool isEmail = true;
   bool isPassword = true;
+  late String nameUser ;
 
 
   @override
@@ -36,32 +37,50 @@ class _MyLoginPageState extends State<MyLoginPage> {
   void signUserIn() {
     readUser();
       List<User> users =  context.read<NoteDatabase>().currentUser;
-      if(users.isEmpty){
+      if(unController.text.isEmpty){
+        isEmail = false;
+        Vibration.vibrate(duration:500, amplitude: 128);
+      }
+      if(passwordController.text.isEmpty){
+        isPassword= false;
+        Vibration.vibrate(duration:500, amplitude: 128);
+      }
+      if(users.isEmpty && unController.text.isNotEmpty && passwordController.text.isNotEmpty){
         Navigator.pop(context);
           Navigator.push(context,
             MaterialPageRoute(
-              builder: (context) => const PerfilPage()                
+              builder: (context) =>  const MySigninPage()                
             )
         );
       }
-      
       if(users.isNotEmpty){
-        List<User> isUsere = users.where((u)=> u.email == unController.text).toList();
+        List<User> isUsere = users.where((u)=> u.email!.toLowerCase() == unController.text.toLowerCase()).toList();
         List<User> isUserpw = users.where((i)=> i.password == passwordController.text).toList();
-        if(isUsere.isEmpty) {
-          isEmail = false;
-          Vibration.vibrate(duration:500, amplitude: 128);
-        }
-
-        if(isUserpw.isEmpty){
-          isPassword = false;
-          Vibration.vibrate(duration:500, amplitude: 128);
-        }
-        if(isUsere.isNotEmpty && isUserpw.isNotEmpty){
+          
+        if(isUsere.isEmpty && unController.text.isNotEmpty && passwordController.text.isNotEmpty){
           Navigator.pop(context);
           Navigator.push(context,
             MaterialPageRoute(
-              builder: (context) => const PerfilPage()                
+              builder: (context) =>  const MySigninPage()                
+            )
+          );
+        }
+        if(isUsere.isEmpty) {
+          isEmail = false;
+          unController.clear();
+          Vibration.vibrate(duration:500, amplitude: 128);
+        }
+        if(isUserpw.isEmpty){
+          isPassword = false;
+          passwordController.clear();
+          Vibration.vibrate(duration:500, amplitude: 128);
+        }
+        if(isUsere.isNotEmpty && isUserpw.isNotEmpty){
+          nameUser = isUsere[0].name!;
+          Navigator.pop(context);
+          Navigator.push(context,
+            MaterialPageRoute(
+              builder: (context) =>  PerfilPage(data: nameUser ,email: unController.text,)                
             )
           );
         }
@@ -75,8 +94,6 @@ class _MyLoginPageState extends State<MyLoginPage> {
   Widget build(BuildContext context) {
 
     final userdatabase = context.watch<NoteDatabase>();
-
-    List<User> currentUser = userdatabase.currentUser;
 
     return  Scaffold(
       body:  SafeArea(
@@ -190,7 +207,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
                         Navigator.pop(context);
                         Navigator.push(context,
                           MaterialPageRoute(
-                            builder: (context) =>  MySigninPage()                
+                            builder: (context) => const MySigninPage()                
                           )
                         );
                       },

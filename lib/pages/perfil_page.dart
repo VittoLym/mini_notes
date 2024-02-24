@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:mini_notes/components/text_box.dart';
 
 class PerfilPage extends StatefulWidget {
-  const PerfilPage({super.key});
+  final String data ; 
+  final String email ;
+  
+  const PerfilPage({
+    super.key,
+    required this.data,
+    required this.email,
+    });
 
   @override
   State<PerfilPage> createState() => _PerfilPageState();
@@ -35,6 +42,9 @@ class _PerfilPageState extends State<PerfilPage> {
 
   @override
   Widget build(BuildContext context) {
+    String dataValue = widget.data;
+    String emailVal = widget.email;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -65,7 +75,7 @@ class _PerfilPageState extends State<PerfilPage> {
 
           // user Email
           Text(
-            'juanperez@gmail.com',
+            emailVal,
             textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
             ),
@@ -77,8 +87,8 @@ class _PerfilPageState extends State<PerfilPage> {
             padding:  EdgeInsets.only(left: 25),
             child: Text('My details'),
           ),
-          MyTextBox(sectionName: 'Username:', text: 'Fito Paez', onPressed: () =>editField('username'),),
-          MyTextBox(sectionName: 'Email:', text: 'fp@gmail.com', onPressed: () =>editField('Email'),)
+          MyTextBox(sectionName: 'Username:', text: dataValue, onPressed: () =>editField('username'),),
+          MyTextBox(sectionName: 'Email:', text: emailVal, onPressed: () =>editField('Email'),)
         ],
       )
     );

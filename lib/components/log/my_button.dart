@@ -5,7 +5,7 @@ class MyButton extends StatefulWidget {
   final Function()? onTap;
   final String text;
 
-  MyButton({
+  const MyButton({
     super.key,
     required this.onTap,
     required this.text
@@ -22,11 +22,11 @@ class _MyButtonState extends State<MyButton> {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 100),
       builder: (context, opacityValue, child) {
         return TweenAnimationBuilder<double>(
           tween: Tween<double>(begin: 25.0, end: button ? 25.0 : 40.0),
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 100),
           builder: (context, sizeValue, child) {
             return GestureDetector(
               onTap: widget.onTap,

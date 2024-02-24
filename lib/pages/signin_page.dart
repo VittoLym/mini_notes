@@ -10,13 +10,14 @@ import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
 class MySigninPage extends StatefulWidget {
-  MySigninPage({super.key});
+  const MySigninPage({super.key});
 
   @override
   State<MySigninPage> createState() => _MySigninPageState();
 }
 
 class _MySigninPageState extends State<MySigninPage> {
+  
   bool isEmail = true;
 
   bool isUser = true;
@@ -32,32 +33,57 @@ class _MySigninPageState extends State<MySigninPage> {
   @override
   void initState(){
     super.initState();
-
     readUser();
   }
 
   void signUp() {
     readUser();
-    List<User> users =  context.read<NoteDatabase>().currentUser;
-    if(users.isEmpty && emailController.text != '' && unController.text != '' && passwordController.text != '') {
-        List<String> ctl = unController.text.split(' ');
-        context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text);
+    if(unController.text.isEmpty || emailController.text.isEmpty || passwordController.text.isEmpty){
+      if(unController.text.isEmpty){
+        isUser = false;
+        Vibration.vibrate(duration: 500, amplitude: 128);
+      }
+      if(emailController.text.isEmpty){
+        isEmail = false;
+        Vibration.vibrate(duration: 500, amplitude: 128);
+      }
+      if(passwordController.text.isEmpty){
+        isPassword = false;
+        Vibration.vibrate(duration: 500, amplitude: 128);
+      }
+      return;
     }
-    
+    List<User> users =  context.read<NoteDatabase>().currentUser;
+    if(users.isEmpty){
+      if(unController.text.isNotEmpty && emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
+        List<String> ctl = unController.text.split(' ');
+        context.read<NoteDatabase>().addUser(ctl[0], emailController.text,passwordController.text);
+        Navigator.pop(context);
+        Navigator.push(context,
+            MaterialPageRoute(
+              builder: (context) => PerfilPage(data: ctl[0], email: emailController.text,)                
+            )
+          );
+      }
+    }
     if(users.isNotEmpty){
-      List<User> userCreated = users.where((u) => u.email == emailController.text).toList();
-      if(userCreated.isNotEmpty) {
-          isEmail = false;
-      };
-      if(userCreated.isEmpty && emailController.text != '' && unController.text != '' && passwordController.text != ''){
+      List<User> isCreated = users.where((u) => u.email!.toLowerCase() == emailController.text.toLowerCase()).toList();
+      if(isCreated.isEmpty){
+        //there is not match to db
         List<String> ctl = unController.text.split(' ');
         context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text);
         Navigator.pop(context);
         Navigator.push(context,
             MaterialPageRoute(
-              builder: (context) => const PerfilPage()                
+              builder: (context) => PerfilPage(data: ctl[0], email: emailController.text,)                
             )
           );
+      }
+      else{
+        isEmail= false;
+        emailController.clear();
+        unController.clear();
+        passwordController.clear();
       }
     }
   }
@@ -65,8 +91,12 @@ class _MySigninPageState extends State<MySigninPage> {
   void readUser(){
     context.read<NoteDatabase>().fetchUser();
   }
+  
+  
   @override
   Widget build(BuildContext context) {
+
+    context.watch<NoteDatabase>();
     return Scaffold(
       body:  SafeArea(
         child: SingleChildScrollView(
@@ -93,9 +123,9 @@ class _MySigninPageState extends State<MySigninPage> {
                   hintText: 'Username',
                   obscureText: false,
                   validate: isUser,
-                    onValidationChanged: (newValue){
+                  onValidationChanged: (newValue){
                     setState((){
-                        isUser= newValue;
+                        isUser = newValue;
                     });
                   }
                 ),
@@ -107,7 +137,7 @@ class _MySigninPageState extends State<MySigninPage> {
                   validate: isEmail,
                     onValidationChanged: (newValue){
                     setState((){
-                        isEmail= newValue;
+                        isEmail = newValue;
                     });
                   }
                   ),
@@ -173,7 +203,7 @@ class _MySigninPageState extends State<MySigninPage> {
                         Navigator.pop(context);
                         Navigator.push(context,
                           MaterialPageRoute(
-                            builder: (context) =>  MyLoginPage()                
+                            builder: (context) => const MyLoginPage()                
                           )
                         );
                       },
