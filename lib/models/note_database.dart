@@ -57,12 +57,13 @@ class NoteDatabase extends ChangeNotifier {
   }
 
   // CREATE user & save to db
-  Future<void> addUser(String name, String email, String password) async{
+  Future<void> addUser(String name, String email, String password, String token) async{
     
     final newuser = User()
       ..name = name
       ..email = email
-      ..password = password;
+      ..password = password
+      ..token = token;
 
     await isar.writeTxn(() => isar.users.put(newuser));
 
@@ -78,7 +79,7 @@ class NoteDatabase extends ChangeNotifier {
   }
 
   //UPDATE user
-  Future<void> updateUser(int id, {String? name, String? email, String? password}) async{
+  Future<void> updateUser(int id, {String? name, String? email, String? password, String? token}) async{
     final existingUser = await isar.users.get(id);
     if(existingUser != null){
       if(name != null){
@@ -89,6 +90,9 @@ class NoteDatabase extends ChangeNotifier {
       }
       if(password != null){
         existingUser.password = password;
+      }
+      if(token != null){
+        existingUser.token = token;
       }
       await isar.writeTxn(() => isar.users.put(existingUser));
       await fetchUser();

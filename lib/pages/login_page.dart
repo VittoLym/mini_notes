@@ -7,6 +7,7 @@ import 'package:mini_notes/models/user.dart';
 import 'package:mini_notes/pages/perfil_page.dart';
 import 'package:mini_notes/pages/signin_page.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:vibration/vibration.dart';
 
 class MyLoginPage extends StatefulWidget {
@@ -77,6 +78,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
         }
         if(isUsere.isNotEmpty && isUserpw.isNotEmpty){
           nameUser = isUsere[0].name!;
+          String v5 = const  Uuid().v5(Uuid.NAMESPACE_URL, isUsere[0].name);
+          context.read<NoteDatabase>().updateUser(isUsere[0].id, token: v5);
           Navigator.pop(context);
           Navigator.push(context,
             MaterialPageRoute(
@@ -89,6 +92,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   void readUser(){
     context.read<NoteDatabase>().fetchUser();
+    
   }
   @override
   Widget build(BuildContext context) {

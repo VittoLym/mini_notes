@@ -1,7 +1,11 @@
 import 'package:mini_notes/components/drawer_tile.dart';
+import 'package:mini_notes/models/note_database.dart';
+import 'package:mini_notes/models/user.dart';
 import 'package:mini_notes/pages/login_page.dart';
+import 'package:mini_notes/pages/notes_page.dart';
 import 'package:mini_notes/pages/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../pages/perfil_page.dart';
 
@@ -13,9 +17,54 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
-    bool conditions = false;
+
+  @override
+  void initState(){
+    super.initState();
+  }
+
+  late bool conditions;
+  late List<User> isCreated;
+  void isUser(){
+      context.read<NoteDatabase>().fetchUser();
+      List<User> users =  context.read<NoteDatabase>().currentUser;
+      if(users.isNotEmpty){
+        isCreated = users.where((u)=>u.token != ' ').toList();
+        
+        if(isCreated.isNotEmpty){
+        conditions = true;
+        }
+        else{
+          conditions = false;
+        }
+      }
+      else {
+        conditions = false;
+        return;
+      }
+    }
+  void logout(){
+    if(isCreated.isNotEmpty){
+    context.read<NoteDatabase>().updateUser(isCreated[0].id, token: ' ');
+    Navigator.pop(context);
+    Navigator.push(context,
+      MaterialPageRoute(builder:
+        (context)=> const NotesPage()
+        )
+      );
+    }
+    else{
+    Navigator.pop(context);
+    Navigator.push(context,
+      MaterialPageRoute(builder:
+        (context)=> const NotesPage()
+        )
+      );
+    }
+  }
   @override
   Widget build(BuildContext context){
+    isUser();
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.background,
       child: Column(
@@ -47,7 +96,7 @@ class _MyDrawerState extends State<MyDrawer> {
               Navigator.pop(context),
               Navigator.push(context,
                 MaterialPageRoute(
-                  builder: (context) => conditions ? const PerfilPage(data: 'Drawer', email: 'DrawerEmail',) : const MyLoginPage()                
+                  builder: (context) => conditions ?  PerfilPage(data: isCreated[0].name! , email: isCreated[0].email!) : const MyLoginPage()                
                 )
               )
             }
@@ -71,7 +120,7 @@ class _MyDrawerState extends State<MyDrawer> {
         DrawerTile(
           title: 'L O G O U T',
           leading: const Icon(Icons.logout),
-          onTap: ()=>{}
+          onTap: logout
           )
       ],
       ),

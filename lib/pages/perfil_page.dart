@@ -42,8 +42,8 @@ class _PerfilPageState extends State<PerfilPage> {
 
   @override
   Widget build(BuildContext context) {
-    String dataValue = widget.data;
-    String emailVal = widget.email;
+    String? dataValue = widget.data;
+    String? emailVal = widget.email;
 
     return Scaffold(
       appBar: AppBar(
@@ -88,7 +88,8 @@ class _PerfilPageState extends State<PerfilPage> {
             child: Text('My details'),
           ),
           MyTextBox(sectionName: 'Username:', text: dataValue, onPressed: () =>editField('username'),),
-          MyTextBox(sectionName: 'Email:', text: emailVal, onPressed: () =>editField('Email'),)
+          MyTextBox(sectionName: 'Email:', text: emailVal, onPressed: () =>editField('Email'),),
+          MyTextBox(sectionName: 'Password:', text: '********', onPressed: () =>editField('Email'),)
         ],
       )
     );

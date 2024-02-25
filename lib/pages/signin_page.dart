@@ -8,6 +8,7 @@ import 'package:mini_notes/pages/login_page.dart';
 import 'package:mini_notes/pages/perfil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
+import 'package:uuid/uuid.dart';
 
 class MySigninPage extends StatefulWidget {
   const MySigninPage({super.key});
@@ -57,7 +58,8 @@ class _MySigninPageState extends State<MySigninPage> {
     if(users.isEmpty){
       if(unController.text.isNotEmpty && emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
         List<String> ctl = unController.text.split(' ');
-        context.read<NoteDatabase>().addUser(ctl[0], emailController.text,passwordController.text);
+        String v5 = const  Uuid().v5(Uuid.NAMESPACE_URL, ctl[0]);
+        context.read<NoteDatabase>().addUser(ctl[0], emailController.text,passwordController.text, v5);
         Navigator.pop(context);
         Navigator.push(context,
             MaterialPageRoute(
@@ -71,7 +73,8 @@ class _MySigninPageState extends State<MySigninPage> {
       if(isCreated.isEmpty){
         //there is not match to db
         List<String> ctl = unController.text.split(' ');
-        context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text);
+        String v5 = const  Uuid().v5(Uuid.NAMESPACE_URL, ctl[0]);
+        context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text, v5);
         Navigator.pop(context);
         Navigator.push(context,
             MaterialPageRoute(
@@ -91,7 +94,6 @@ class _MySigninPageState extends State<MySigninPage> {
   void readUser(){
     context.read<NoteDatabase>().fetchUser();
   }
-  
   
   @override
   Widget build(BuildContext context) {
