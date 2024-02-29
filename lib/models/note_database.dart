@@ -22,14 +22,27 @@ class NoteDatabase extends ChangeNotifier {
   //CREATE (create and save notes to db)
   Future<void> addNote(String textFromUser) async {
 
-  //create a new note object
-  final newNote = Note()..text = textFromUser;
+    List<User> listUser = currentUser.where((u)=> u.token != ' ').toList();
+    User actualUser = listUser[0];
+  
+    //create a new note object
+    final newNote = Note()
+    ..text = textFromUser
+    ..user = actualUser.email! ;
+  
+    //save to db
+    await isar.writeTxn(() => isar.notes.put(newNote));
+    
+    // re-read from db
+    await fetchNotes();
 
-  //save to db
-  await isar.writeTxn(() => isar.notes.put(newNote));
+    List<String> notitas  = currentNotes
+    .where((n) => n.user != ' ')
+    .map((e) =>  e.text )
+    .toList();
 
-  // re-read from db
-  fetchNotes();
+    await updateUser(actualUser.id, notes: notitas);
+    fetchUser();
   }
 
   //READ
@@ -43,27 +56,52 @@ class NoteDatabase extends ChangeNotifier {
   //UPDATE
   Future<void> updateNotes(int id, String newText) async{
     final existingNote = await isar.notes.get(id);
-    if(existingNote != null){
+   
+   if(existingNote != null){
       existingNote.text = newText;
       await isar.writeTxn(() => isar.notes.put(existingNote));
       await fetchNotes();
+
+    List<User> listUser = currentUser.where((u)=> u.token != ' ').toList();
+    User actualUser = listUser[0];
+
+    List<String> notitas  = currentNotes
+    .where((n) => n.user != ' ')
+    .map((e) =>  e.text )
+    .toList();
+
+    await updateUser(actualUser.id, notes: notitas );
+    await fetchUser();
     }
   }
 
   //DELETE
   Future<void> deleteNotes(int id) async{
     await isar.writeTxn(() => isar.notes.delete(id));
+    
+    List<User> listUser = currentUser.where((u)=> u.token != ' ').toList();
+    User actualUser = listUser[0];
+    
     await fetchNotes();
+    
+    List<String> notitas  = currentNotes
+    .where((n) => n.user != ' ')
+    .map((e) =>  e.text )
+    .toList();
+
+    await updateUser(actualUser.id, notes: notitas );
+    await fetchUser();
   }
 
   // CREATE user & save to db
-  Future<void> addUser(String name, String email, String password, String token) async{
+  Future<void> addUser(String name, String email, String password, String token, List<String> notesUser) async{
     
     final newuser = User()
       ..name = name
       ..email = email
       ..password = password
-      ..token = token;
+      ..token = token
+      ..userNotes = notesUser;
 
     await isar.writeTxn(() => isar.users.put(newuser));
 
@@ -79,7 +117,7 @@ class NoteDatabase extends ChangeNotifier {
   }
 
   //UPDATE user
-  Future<void> updateUser(int id, {String? name, String? email, String? password, String? token}) async{
+  Future<void> updateUser(int id, {String? name, String? email, String? password, String? token, List<String>? notes }) async{
     final existingUser = await isar.users.get(id);
     if(existingUser != null){
       if(name != null){
@@ -93,6 +131,9 @@ class NoteDatabase extends ChangeNotifier {
       }
       if(token != null){
         existingUser.token = token;
+      }
+      if(notes != null){
+        existingUser.userNotes = notes;
       }
       await isar.writeTxn(() => isar.users.put(existingUser));
       await fetchUser();

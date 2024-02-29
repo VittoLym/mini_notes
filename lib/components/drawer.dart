@@ -1,4 +1,5 @@
 import 'package:mini_notes/components/drawer_tile.dart';
+import 'package:mini_notes/models/note.dart';
 import 'package:mini_notes/models/note_database.dart';
 import 'package:mini_notes/models/user.dart';
 import 'package:mini_notes/pages/login_page.dart';
@@ -21,10 +22,13 @@ class _MyDrawerState extends State<MyDrawer> {
   @override
   void initState(){
     super.initState();
+
+    isUser();
   }
 
   late bool conditions;
   late List<User> isCreated;
+  late List<Note> notes; 
   void isUser(){
       context.read<NoteDatabase>().fetchUser();
       List<User> users =  context.read<NoteDatabase>().currentUser;
@@ -45,6 +49,7 @@ class _MyDrawerState extends State<MyDrawer> {
     }
   void logout(){
     if(isCreated.isNotEmpty){
+    notes = context.read<NoteDatabase>().currentNotes;
     context.read<NoteDatabase>().updateUser(isCreated[0].id, token: ' ');
     Navigator.pop(context);
     Navigator.push(context,

@@ -36,6 +36,11 @@ const UserSchema = CollectionSchema(
       id: 3,
       name: r'token',
       type: IsarType.string,
+    ),
+    r'userNotes': PropertySchema(
+      id: 4,
+      name: r'userNotes',
+      type: IsarType.stringList,
     )
   },
   estimateSize: _userEstimateSize,
@@ -82,6 +87,18 @@ int _userEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final list = object.userNotes;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
+    }
+  }
   return bytesCount;
 }
 
@@ -95,6 +112,7 @@ void _userSerialize(
   writer.writeString(offsets[1], object.name);
   writer.writeString(offsets[2], object.password);
   writer.writeString(offsets[3], object.token);
+  writer.writeStringList(offsets[4], object.userNotes);
 }
 
 User _userDeserialize(
@@ -109,6 +127,7 @@ User _userDeserialize(
   object.name = reader.readStringOrNull(offsets[1]);
   object.password = reader.readStringOrNull(offsets[2]);
   object.token = reader.readStringOrNull(offsets[3]);
+  object.userNotes = reader.readStringList(offsets[4]);
   return object;
 }
 
@@ -127,6 +146,8 @@ P _userDeserializeProp<P>(
       return (reader.readStringOrNull(offset)) as P;
     case 3:
       return (reader.readStringOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringList(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -848,6 +869,236 @@ extension UserQueryFilter on QueryBuilder<User, User, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'userNotes',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'userNotes',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userNotes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userNotes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userNotes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userNotes',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'userNotes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'userNotes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'userNotes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'userNotes',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userNotes',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'userNotes',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userNotes',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userNotes',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userNotes',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userNotes',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userNotes',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> userNotesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userNotes',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
 }
 
 extension UserQueryObject on QueryBuilder<User, User, QFilterCondition> {}
@@ -994,6 +1245,12 @@ extension UserQueryWhereDistinct on QueryBuilder<User, User, QDistinct> {
       return query.addDistinctBy(r'token', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<User, User, QDistinct> distinctByUserNotes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userNotes');
+    });
+  }
 }
 
 extension UserQueryProperty on QueryBuilder<User, User, QQueryProperty> {
@@ -1024,6 +1281,12 @@ extension UserQueryProperty on QueryBuilder<User, User, QQueryProperty> {
   QueryBuilder<User, String?, QQueryOperations> tokenProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'token');
+    });
+  }
+
+  QueryBuilder<User, List<String>?, QQueryOperations> userNotesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userNotes');
     });
   }
 }

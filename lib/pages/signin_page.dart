@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mini_notes/components/log/my_button.dart';
 import 'package:mini_notes/components/log/my_textfield.dart';
 import 'package:mini_notes/components/log/square_tile.dart';
+import 'package:mini_notes/models/note.dart';
 import 'package:mini_notes/models/note_database.dart';
 import 'package:mini_notes/models/user.dart';
 import 'package:mini_notes/pages/login_page.dart';
@@ -55,11 +56,16 @@ class _MySigninPageState extends State<MySigninPage> {
       return;
     }
     List<User> users =  context.read<NoteDatabase>().currentUser;
+    List<Note> notes = context.read<NoteDatabase>().currentNotes;
     if(users.isEmpty){
       if(unController.text.isNotEmpty && emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
         List<String> ctl = unController.text.split(' ');
         String v5 = const  Uuid().v5(Uuid.NAMESPACE_URL, ctl[0]);
-        context.read<NoteDatabase>().addUser(ctl[0], emailController.text,passwordController.text, v5);
+        List<String> notitas  = notes
+        .where((n) => n.user == emailController.text)
+        .map((e) => e.text)
+        .toList();
+        context.read<NoteDatabase>().addUser(ctl[0], emailController.text,passwordController.text, v5, notitas);
         Navigator.pop(context);
         Navigator.push(context,
             MaterialPageRoute(
@@ -74,7 +80,11 @@ class _MySigninPageState extends State<MySigninPage> {
         //there is not match to db
         List<String> ctl = unController.text.split(' ');
         String v5 = const  Uuid().v5(Uuid.NAMESPACE_URL, ctl[0]);
-        context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text, v5);
+        List<String> notitas  = notes
+        .where((n) => n.user == 'vitto.jsx@gmail.com')
+        .map((e) => e.text)
+        .toList();
+        context.read<NoteDatabase>().addUser(ctl[0].trim(), emailController.text,passwordController.text, v5, notitas);
         Navigator.pop(context);
         Navigator.push(context,
             MaterialPageRoute(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mini_notes/components/log/my_button.dart';
 import 'package:mini_notes/components/log/my_textfield.dart';
 import 'package:mini_notes/components/log/square_tile.dart';
+import 'package:mini_notes/models/note.dart';
 import 'package:mini_notes/models/note_database.dart';
 import 'package:mini_notes/models/user.dart';
 import 'package:mini_notes/pages/perfil_page.dart';
@@ -38,6 +39,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
   void signUserIn() {
     readUser();
       List<User> users =  context.read<NoteDatabase>().currentUser;
+      List<Note> notes = context.read<NoteDatabase>().currentNotes;
       if(unController.text.isEmpty){
         isEmail = false;
         Vibration.vibrate(duration:500, amplitude: 128);
@@ -79,7 +81,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
         if(isUsere.isNotEmpty && isUserpw.isNotEmpty){
           nameUser = isUsere[0].name!;
           String v5 = const  Uuid().v5(Uuid.NAMESPACE_URL, isUsere[0].name);
-          context.read<NoteDatabase>().updateUser(isUsere[0].id, token: v5);
+          context.read<NoteDatabase>().updateUser(isUsere[0].id, token: v5, );
           Navigator.pop(context);
           Navigator.push(context,
             MaterialPageRoute(
@@ -97,7 +99,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
   @override
   Widget build(BuildContext context) {
 
-    final userdatabase = context.watch<NoteDatabase>();
+    context.watch<NoteDatabase>();
 
     return  Scaffold(
       body:  SafeArea(

@@ -3,6 +3,7 @@ import 'package:mini_notes/components/note_tiles.dart';
 import 'package:mini_notes/models/note_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mini_notes/models/user.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
@@ -129,6 +130,36 @@ class _NotesPageState extends State<NotesPage> {
 
   //current notes
   List<Note> currentNotes = noteDatabase.currentNotes;
+  //current user notes
+  context.read<NoteDatabase>().fetchUser();
+  List<User> currentUserNote = noteDatabase.currentUser;
+  List<String?> userNoteDB = currentUserNote
+  .where((n) => n.token != ' ')
+  .map((e) => e.email)
+  .toList();
+  
+  late List<String> userNotes2;
+  late List<Note> note;
+
+  if(userNoteDB.isNotEmpty){
+  note = currentNotes
+  .where((n)=> n.user == userNoteDB[0])
+  .toList();
+  
+  userNotes2 = note
+  .where((e)=> e.user == userNoteDB[0])
+  .map((n) => n.text)
+  .toList();
+  }
+  else{
+  note = [];
+  userNotes2 = [];
+  }
+  
+  final userNotes = currentUserNote
+  .where((n) => n.token != ' ')
+  .map((n) => n.userNotes)
+  .toList();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -149,7 +180,7 @@ class _NotesPageState extends State<NotesPage> {
           Padding(
             padding: const EdgeInsets.only(left:10.0),
             child: Text(
-              'Notes', 
+              'Mini Notes', 
               style: GoogleFonts.dmSerifText(
                 fontSize:48,
                 color: Theme.of(context).colorScheme.inversePrimary,
@@ -159,20 +190,28 @@ class _NotesPageState extends State<NotesPage> {
           //list of notes
           Expanded(
             child: ListView.builder(
-              itemCount: currentNotes.length,
+              itemCount: userNotes2.length,
               itemBuilder: (context, index) {
                 //get individual note
-                final note = currentNotes [index];
-            
+                final noteList = userNotes2[index];
                 //list tile UI
-                return NoteTile(
-                  text: note.text,
-                  onEditPressed: ()=> updateNote(note),
-                  onDeletePressed: ()=> deleteNote(note.id),
-                  );
+                if (noteList.isEmpty) {
+                   return const SizedBox.shrink(); // O cualquier otro widget o mensaje
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final mapEntry in userNotes2.asMap().entries)
+                    NoteTile(
+                    text: mapEntry.value,
+                    onEditPressed: () => updateNote(note[mapEntry.key]),
+                    onDeletePressed: () =>deleteNote(note[mapEntry.key].id)  ,
+                    ),
+                  ],
+                );
               }
             ),
-          ),
+          ), 
         ],
       ),
     );

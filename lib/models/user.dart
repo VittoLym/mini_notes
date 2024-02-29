@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:mini_notes/models/note.dart';
 
 part 'user.g.dart';
 
@@ -13,4 +14,7 @@ class User {
   String? password;
 
   String? token;
+  
+  List<String>? userNotes;
+
 }
