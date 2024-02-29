@@ -22,27 +22,46 @@ class NoteDatabase extends ChangeNotifier {
   //CREATE (create and save notes to db)
   Future<void> addNote(String textFromUser) async {
 
+    late Note newNote;
+    late var actualUser;
     List<User> listUser = currentUser.where((u)=> u.token != ' ').toList();
-    User actualUser = listUser[0];
-  
-    //create a new note object
-    final newNote = Note()
-    ..text = textFromUser
-    ..user = actualUser.email! ;
-  
-    //save to db
-    await isar.writeTxn(() => isar.notes.put(newNote));
     
-    // re-read from db
-    await fetchNotes();
+    if(listUser.isNotEmpty){
+      // find actual user
+      actualUser = listUser[0];
+    
+      //create a new note object with user dataa
+      newNote = Note()
+      ..text = textFromUser
+      ..user = actualUser.email! ;
 
+      
+      //save to db
+      await isar.writeTxn(() => isar.notes.put(newNote));
+      // re-read from db
+      await fetchNotes();
+    }
+    else{
+      newNote = Note()
+      ..text = textFromUser;
+      //save to db
+      await isar.writeTxn(() => isar.notes.put(newNote));
+      // re-read from db
+      await fetchNotes();
+      actualUser = listUser.isNotEmpty;
+    }   
+    
     List<String> notitas  = currentNotes
     .where((n) => n.user != ' ')
     .map((e) =>  e.text )
     .toList();
-
-    await updateUser(actualUser.id, notes: notitas);
+    
+    if(listUser.isNotEmpty){
+      await updateUser(actualUser.id, notes: notitas);
+    }
+    
     fetchUser();
+  
   }
 
   //READ

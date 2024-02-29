@@ -49,7 +49,12 @@ int _noteEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.text.length * 3;
-  bytesCount += 3 + object.user.length * 3;
+  {
+    final value = object.user;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -72,7 +77,7 @@ Note _noteDeserialize(
   final object = Note();
   object.id = id;
   object.text = reader.readString(offsets[0]);
-  object.user = reader.readString(offsets[1]);
+  object.user = reader.readStringOrNull(offsets[1]);
   return object;
 }
 
@@ -86,7 +91,7 @@ P _noteDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -360,8 +365,24 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Note, Note, QAfterFilterCondition> userIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'user',
+      ));
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterFilterCondition> userIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'user',
+      ));
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterFilterCondition> userEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -374,7 +395,7 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
   }
 
   QueryBuilder<Note, Note, QAfterFilterCondition> userGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -389,7 +410,7 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
   }
 
   QueryBuilder<Note, Note, QAfterFilterCondition> userLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -404,8 +425,8 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
   }
 
   QueryBuilder<Note, Note, QAfterFilterCondition> userBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -586,7 +607,7 @@ extension NoteQueryProperty on QueryBuilder<Note, Note, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Note, String, QQueryOperations> userProperty() {
+  QueryBuilder<Note, String?, QQueryOperations> userProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'user');
     });
